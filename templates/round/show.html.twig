@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Round{% endblock %}
+
+{% block body %}
+    <h1>Round</h1>
+
+<table class="table">
+        <thead>
+            <tr>
+                <th>Identifiant</th>
+                <th>GS Identifiant</th>
+                <th>GS Nombre de Sets</th>
+                 <th>GS Points des Sets</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for groupStage in round.groupStages %}
+            <tr>
+                <td>{{ round.id }}</td>
+                <td>{{ groupStage.id }}</td>
+                <td>{{ groupStage.setPerGroupStage }}</td>
+                <td>{{ groupStage.setPoints }}</td>
+                
+
+                <td>
+                    
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {# <a href="{{ path('round_index') }}">back to list</a>
+
+    <a href="{{ path('round_edit', {'id': round.id}) }}">edit</a>
+
+    {{ include('round/_delete_form.html.twig') }} #}
+{% endblock %}

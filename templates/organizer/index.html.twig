@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Index Organisateur{% endblock %}
+
+{% block body %}
+    <h1>Index Organisateur</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+
+                <th>Email</th>
+                <th>Roles</th>
+
+                <th>Nom</th>
+                <th>Prénom</th>
+
+            </tr>
+        </thead>
+        <tbody>
+        {% for organizer in organizers %}
+            <tr>
+
+                <td>{{ organizer.email }}</td>
+                <td>{{ organizer.roles ? organizer.roles|json_encode : '' }}</td>
+
+                <td>{{ organizer.firstname }}</td>
+                <td>{{ organizer.surname }}</td>
+
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('organizer_new') }}">Nouveau</a>
+{% endblock %}

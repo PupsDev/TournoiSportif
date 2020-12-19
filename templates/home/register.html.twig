@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+         {% block javascript %}
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+ {% endblock %}
+        {% block stylesheets %}
+
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+ 
+ 
+        	<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+<link rel="stylesheet" href="/assets/styles/registration.css">
+        {% endblock %}
+       
+    </head>
+    <body>
+    	<h1 class="text-center titre">Vous êtes ... ?</h1>
+        <div class="container">
+
+	  <div class="row">
+	    <div class="col-md p-3 mb-5 rounded" id="organizer">
+
+	      	<h1 class="text-center user" > Organisateur·trice</h1>
+	      	
+	    </div>
+	    <div class="col-md p-3 mb-5  rounded" id="player">
+
+	      	<h1 class="text-center user"> Joueur·euse</h1>
+	      	
+	      
+	    </div>
+	  </div>
+
+	  <h2 class="text-right"> <a href="{{path('app_login')}}"> déjà enregistré(e) !<a/></h2>
+	</div>
+	
+
+
+        {% block javascripts %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+ $(".col-md").click(function(){
+  var id = $(this).attr('id')
+  console.log(id);
+  var url = "{{ path('player_new') }}"; 
+   url = url.replace("player", id);
+
+  location.replace(url);
+ });
+</script>
+
+        {% endblock %}
+    </body>
+</html>

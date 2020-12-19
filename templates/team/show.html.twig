@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Équipe{% endblock %}
+
+{% block body %}
+        {% set idCaptain = 1 %}
+    {% for player in team.players %}
+        {% if 'ROLE_CAPTAIN' in player.roles %}
+            {% set idCaptain = player.id %}
+        {% endif %}
+    {% endfor %}
+   <div class="card-header" style="background-color:#303030;color:white;text-align:center;">
+<h1>
+    <div class="row">
+    <div class="col-6">
+     Profil Équipe
+    </div>
+
+    <div class="col" style="border-left:2px solid white; height:100%;">
+
+                <a href="{{ path('team_edit', {'id': team.id}) }}" class="btn btn-danger">Modifier équipe</a>
+                <a href="{{ path('player_show', {'id': idCaptain}) }}" class="btn btn-danger">Retour</a>
+    </div>
+    </h1>
+</div>
+
+    <ul class="list-group"> 
+
+        <li class="list-group-item"> <strong>Nom</strong>   {{ team.name }}</li>
+        <li class="list-group-item"> <strong>Niveau</strong>   {{ team.level }}</li>
+        <li class="list-group-item"> <strong>Tournoi</strong>   {{ team.turnament }}</li>
+        <li class="list-group-item list-group-item-primary"> <strong>Liste des joueurs</strong>   </li>
+        {% for player in team.players %}
+             <li class="list-group-item"> {{ player.firstname }}  {{ player.surname }}</li>
+        {% endfor %}
+</ul>
+{% endblock %}

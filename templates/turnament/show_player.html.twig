@@ -1,0 +1,188 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Tournoi{% endblock %}
+
+{% block body %}
+    
+      <style>
+    .poule{
+    width: 150px;
+    min-height: 20px;
+    list-style-type: none;
+    margin-right: 40px;
+    float:left;
+
+  }
+  .list-group-item li{
+    margin-left: -20px;
+    font-size: 1.2em;
+    width: 110px;
+  }
+  .tournoi{
+    width: 90%;
+    margin-left: 5%;
+
+  }
+  </style>
+
+<div class="card tab-content" id="content">
+     <div class="card-header" style="background-color:#303030;color:white;text-align:center;">
+<h1>Poules</h1>
+<button class="btn btn-info " id="next-round">Tour suivant</button>
+</div>
+  
+    {% for round in turnament.rounds %}
+       {% set myloop = loop.index %}
+
+        {% if round.groupStages[0].teams is not empty  %}
+           <div class="row">
+        {% for groupStage in round.groupStages %}
+            
+                {% if groupStage.teams is not empty %}
+                  <div class="col-2" >
+              <ul  class="list-group" id="sortable{{loop.index}}">
+
+                 <li  class ="list-group-item list-group-item-primary poule" id="psortable{{loop.index}}"> Poule {{loop.index}}</li>
+               {% for team in groupStage.teams %}
+
+                   <li class ="list-group-item  poule" id="{{ team.id }}:{{team.name}}:{{groupStage.setPerGroupStage}}"> {{ team.name }}</li>
+
+                  {% endfor %}  
+                  
+               {% endif %}
+               </ul>
+             </div>
+        {% endfor %}
+        </div>
+        {% endif %}
+
+    {% endfor %}
+</div>
+<div class="tournoi">
+  <div class="card" id="output">
+         <div class="card-header" style="background-color:#303030;color:white;text-align:center;">
+    <h1>Matchs</h1>
+    </div>
+  </div>
+</div>
+
+<script>
+  $("#next-round").click(function(){
+        location.replace("{{ path('turnament_show_player',{'idEvent': turnament.event.id, 'id': turnament.id, 'roundId': (roundId+1) } ) }}");
+      });
+  $( function(){
+     if({{roundId+1}}>{{turnament.rounds|length}})
+    {
+       location.replace("{{ path('turnament_finish',{'idEvent': turnament.event.id, 'id': turnament.id } ) }}");
+    }
+ 
+    let rounds = {};
+
+
+
+    $('.list-group').each(function(i)
+    {
+        let idR = $(this).attr('id');
+        //each round
+        console.log(idR);
+         let groupStages={}
+
+        $(this).children().each(function( index, value )
+        {
+            //each group stage
+            let id = $(this).attr('id');
+            
+            if($(this).attr('id')!= 'p'+idR)
+            {
+              
+               $(this).each(function( index, value ){
+                   //each team
+
+                  let teamId = $(value).attr('id');
+                  console.log(teamId);
+
+                  if (!groupStages[id]) {
+                  groupStages[id] = [];
+                  }
+                   groupStages[id].push(teamId); 
+
+              });
+                
+              if (!rounds[idR]) {
+                  rounds[idR] = [];
+              }
+               rounds[idR] = groupStages;  
+            }  
+
+        });
+       
+
+        
+    });
+
+   roundsArray = rounds;
+    var roundsJson = JSON.stringify(rounds);
+    console.log(rounds);
+    loadMatches(rounds);
+    
+  });
+  function loadMatches(roundsArray){
+  let i =1;
+  value = roundsArray;
+
+      let rid = {{roundId}};
+       s = "Tour"+rid;
+    
+      
+     $('#output').append('<ul class="list-group poule" id=o'+rid+'></ul>');
+    
+     i++;
+   
+     let groupIndex =1;
+
+    for (const [key2, value2] of Object.entries(value)) {
+
+
+      if(  Object.keys(value2).length > 1)
+         $('#o'+rid).append('<ul class="list-group-item-primary poule" id=o'+key2+'>'+"Poule "+ groupIndex +'</ul>');
+       groupIndex++;
+      let arrId = [];
+      let arrName = [];
+      let arrSet = [];
+
+    
+
+       for (const [key3, value3] of Object.entries(value2)) {
+        value31 = value3[0];
+          let splittedTeam = value31.split(':');
+
+          let idTeam = splittedTeam[0];
+          let nameTeam = splittedTeam[1];
+
+          let setTeam = splittedTeam[2];
+
+
+          arrId.push(idTeam);
+          arrName.push(nameTeam);
+          arrSet.push(setTeam);
+
+          
+
+
+      }
+
+      for(let i = 0 ; i<arrId.length ;  i++ )
+        for(let j = i+1 ; j<arrId.length ;  j++ )
+        {
+          let team = arrId[i]+arrId[j];      
+          $('#o'+rid).append('<li class="list-group-item" id=o'+team+'>'+arrName[i]+' vs '+arrName[j]+'</li>');
+           
+            
+        }
+      
+    }
+    $('#output').appendTo('#container');
+
+}
+</script>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des tournois{% endblock %}
+
+{% block body %}
+         <div class="card-header" style="background-color:#303030;color:white;text-align:center;">
+    <h1> Liste des tournois</h1>
+    </div>
+
+
+{% for turnament in turnaments %}
+{% if loop.index0 is divisible by(3) %}
+ <div class="row row-cols-1 row-cols-sm-1 row-cols-md-3 mt-5">
+ {% endif %}
+ 
+    <div class="col ">
+      <div class="card" style="width: 18rem;">
+        <div class="card-body">
+             <div class="card-header" style="background-color:#303030;color:white;text-align:center;">
+                <h2>{{ turnament.name }}</h2>
+              </div>
+             <p class="card-text">
+                <ul class="list-group">
+                         <li class="list-group-item"> <span class="material-icons">calendar_today</span>  {{ turnament.event.date ? turnament.event.date|date('d-m-Y H:i') : '' }} </li>
+                    <li class="list-group-item"> <span class="material-icons">location_on</span>  {{turnament.event.location }} </li>
+                    <li class="list-group-item"> <i class="material-icons">person</i>{{ turnament.event.playerPerTeam}} joueurs</li>
+                    {% if turnament.event.sport == "sports_petanque" %}
+                       <li class="list-group-item"> Sport :   <span class="material-icons">sports_baseball</span> </li> 
+                   {% else %}
+                    <li class="list-group-item"> Sport :   <span class="material-icons">{{ turnament.event.sport }}</span> </li> 
+                     {% endif %} 
+                    <li class="list-group-item"> <span class="material-icons">tour</span>  {{ turnament.rounds|length  }} </li>
+                
+                 </ul>
+             </p>
+             {% if app.user  %}
+                   {% if 'ROLE_ORGANIZER' in app.user.roles  %}
+                      <a href="{{ path('turnament_edit', {'idEvent': turnament.event.id, 'id': turnament.id} ) }}" class="btn btn-warning">Modifier</a> 
+                        <a href="{{ path('turnament_show', {'idEvent': turnament.event.id, 'id': turnament.id} ) }}" class="btn btn-primary">Voir</a>
+                        <a href="{{ path('turnament_run', {'idEvent': turnament.event.id, 'id': turnament.id,'roundId': 0} ) }}" class="btn btn-success">Lancer</a>
+
+                    
+                     {% else %}
+                       <a href="{{ path('turnament_show_player', {'idEvent': turnament.event.id, 'id': turnament.id,'roundId': 0} ) }}" class="btn btn-primary">Voir</a>
+                {% endif %}
+                {% endif %}
+        </div>
+        </div>
+    </div>
+
+{% if (loop.index0+1) is divisible by(3) %}
+    </div>
+    {% endif %}
+{% endfor %}
+</div>
+{% endblock %}

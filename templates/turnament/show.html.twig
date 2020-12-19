@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tournoi{% endblock %}
+
+{% block body %}
+     <div class="card-header" style="background-color:#303030;color:white;text-align:center;">
+<h1>
+    <div class="row">
+    <div class="col-9">
+     Liste des Tours
+    </div>
+
+    <div class="col" style="border-left:2px solid white; height:100%;">
+      <a href="{{ path('turnament_edit', {'idEvent': turnament.event.id, 'id': turnament.id} ) }}" class="btn btn-danger">Modifier</a>
+      <a href="{{ path('turnament_index',{'idEvent': turnament.event.id}) }}" class="btn btn-primary">Retour</a>
+    </div>
+    </h1>
+</div>
+
+<br>
+<ul class="list-group">
+                    
+    <li class ="list-group-item list-group-item-primary">Liste des Tours :</li>
+
+      {% for round in turnament.rounds %}
+        <div class="row">
+        <div class="col-9">
+             <li class="list-group-item"> Tour :  {{loop.index}} 
+        </div>
+
+        <div class="col">
+            <a href="{{ path('round_edit', {'idEvent': turnament.event.id, 'idTurnament': turnament.id , 'id':round.id } ) }}" class="btn btn-primary">Ajouter des Poules</a>
+            </div>
+        </div>
+         </li>
+
+          {% else %}
+             <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+</ul>
+ 
+    
+    {# {{ include('turnament/_delete_form.html.twig') }} #}
+{% endblock %}

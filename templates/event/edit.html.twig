@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier évènement{% endblock %}
+
+{% block body %}
+     <div class="card-header" style="background-color:#303030;color:white;text-align:center;">
+    <h1>Modifier évènement</h1>
+</div>
+
+    {{ form_start(form) }}
+    <div class = "form-group">
+    	<label for = "">Nom de l'événement :</label>
+    	{{form_widget(form.name)}}
+    </div>
+    <div class = "form-group">
+    	<label for = "">Date de l'événement :</label>
+    	{{form_widget(form.date)}}
+    </div>
+    <div class = "form-group">
+    	<label for = "">Lieu de l'événement :</label>
+    	{{form_widget(form.location)}}
+    </div>
+    <div class = "form-group">
+        <label for = "">Sport de l'événement :</label>
+        {{form_widget(form.sport)}}
+    </div>
+    <div class = "form-group">
+    	<label for = "">Nombre de joueurs par équipe :</label>
+    	{{form_widget(form.playerPerTeam)}}
+    </div>
+
+    <ul class="turnaments list-group" data-prototype="{{ form_widget(form.turnaments.vars.prototype)|e('html_attr') }}">
+        <li class ="list-group-item list-group-item-primary">Liste des tournois :</li>
+        {% for turnament in form.turnaments %}
+            <li class ="list-group-item">Tournoi {{loop.index}} : {{form_widget(turnament.name)}}</li>
+        {% endfor %}
+       
+    </ul>
+    <br>
+    <div class="row">
+        <div class="col-9">
+            <button type="button" class="add_item_link btn btn-primary" data-collection-holder-class="turnaments">Nouveau Tournoi</button>
+        </div>
+
+        <div class="col">
+            <button class="btn btn-success">{{ button_label|default('Mettre à jour') }}</button>
+            <a href="{{ path('event_index') }}" class="btn btn-info">Retour</a>
+         </div>
+    </div>
+    {{ form_row(form._token) }}
+    {{ form_end(form, {'render_rest': false}) }}
+
+
+   
+
+    {# {{ include('event/_delete_form.html.twig') }} #}
+{% endblock %}
+
+{% block javascripts %}
+  <script type="text/javascript">
+ jQuery(document).ready(function() {
+    // Get the ul that holds the collection of tags
+
+    var $tagsCollectionHolder = $('ul.turnaments');
+    // count the current form inputs we have (e.g. 2), use that as the new
+    // index when inserting a new item (e.g. 2)
+    $tagsCollectionHolder.data('index', $tagsCollectionHolder.find('input').length);
+    
+      $(".add_item_link" ).on( "click", function(e) {
+        var $collectionHolderClass = $(e.currentTarget).data('collectionHolderClass');
+        // add a new tag form (see next code block)
+        addFormToCollection($collectionHolderClass);
+    });
+
+});
+
+  
+
+ function addFormToCollection($collectionHolderClass) {
+    // Get the ul that holds the collection of tags
+    var $collectionHolder = $('.' + $collectionHolderClass);
+
+    // Get the data-prototype explained earlier
+    var prototype = $collectionHolder.data('prototype');
+
+    // get the new index
+    var index = $collectionHolder.data('index');
+
+    var newForm = prototype;
+    // You need this only if you didn't set 'label' => false in your tags field in TaskType
+    // Replace '__name__label__' in the prototype's HTML to
+    // instead be a number based on how many items we have
+    // newForm = newForm.replace(/__name__label__/g, index);
+
+    // Replace '__name__' in the prototype's HTML to
+    // instead be a number based on how many items we have
+    newForm = newForm.replace(/__name__/g, index);
+
+    // increase the index with one for the next item
+    $collectionHolder.data('index', index + 1);
+
+    // Display the form in the page in an li, before the "Add a tag" link li
+    var $title = $('<br><li class ="list-group-item">Nouveau tournoi : </li>');
+    var newForm = newForm.replace('Tours :','');
+    var $newFormLi = $('<li class ="list-group-item"></li>').append(newForm);
+
+    // Add the new form at the end of the list
+    //console.log($collectionHolder);
+    $collectionHolder.append($title);
+
+    $collectionHolder.append($newFormLi);
+}
+        
+    </script>
+ {% endblock %}

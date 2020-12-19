@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier les données de l'organisateur{% endblock %}
+
+{% block body %}
+    <h1>Modifier l'organisateur</h1>
+
+    {{ include('organizer/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('organizer_index') }}">Retour à la liste</a>
+
+    {{ include('organizer/_delete_form.html.twig') }}
+{% endblock %}

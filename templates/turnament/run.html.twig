@@ -1,0 +1,312 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Run Turnament{% endblock %}
+
+{% block body %}
+  <style>
+    .sortable{
+    width: 150px;
+    min-height: 20px;
+    list-style-type: none;
+    margin-right: 40px;
+    float:left;
+
+  }
+  .sortable li{
+    margin-left: -20px;
+    font-size: 1.2em;
+    width: 110px;
+  }
+  .ui-state-highlight {
+  border-color: LIME;
+
+}
+.sortable2{
+    width: 270px;
+    min-height: 20px;
+    list-style-type: none;
+  }
+  .number {
+  width: 3em;
+}
+  .labelMatch {
+  margin-top: 20px;
+}
+  </style>
+
+      <div class="card tab-content" id="content">
+     <div class="card-header" style="background-color:#303030;color:white;text-align:center;">
+      <div class="row">
+        <div class="col-9">
+        <h1>Lancer le Tournoi</h1>
+      </div>
+      <div class="col">
+            <button class="btn btn-info " id="next-round">Tour suivant</button>
+ </div>
+</div>
+</div>
+
+<div >
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+  {% set conso = 0 %}
+
+    {% for round in turnament.rounds %}
+
+         {% if loop.index==1 %}
+                      <li class="nav-item"><a class="nav-link active" data-toggle="tab" id="#tabtab{{loop.index}}" href="#tab{{loop.index}}">Tour {{loop.index}}</a></li>
+                {% else %}
+
+                      <li class="nav-item"><a class="nav-link" data-toggle="tab" id="#tabtab{{loop.index}}" href="#tab{{loop.index}}">Tour {{loop.index}}</a></li>
+
+                     
+          {% endif %}
+       
+    {% endfor %}
+    
+  </ul>
+
+<div class="card tab-content" id="content">
+    {% for round in turnament.rounds %}
+    
+                {% if loop.index==1 %}
+                     <div class="tab-pane active"  id="tab{{loop.index}}">
+                {% else %}
+                    <div class="tab-pane"  id="tab{{loop.index}}">
+                {% endif %}
+                {% set myloop = loop.index %}
+        {% for groupStage in round.groupStages %}
+            <ul id="sortable{{loop.index}}{{myloop}}" class="connectedSortable sortable">
+
+                Poule {{loop.index}}
+             {% for team in groupStage.teams %}
+
+                 <li class="ui-state-default" id="{{ team.id }}:{{team.name}}:{{groupStage.setPerGroupStage}}" >{{ team.name }}</li>
+
+                {% endfor %}
+                </ul>
+
+            
+        {% endfor %}
+        </div>
+        
+    {% endfor %}
+</div>
+<button class="btn btn-info " id="load-matches">Charger les matchs</button>
+<div id="output">
+
+</div>
+</div>
+</div>
+  <script>
+
+  let currentRound=0;
+  $( function() {
+    if({{roundId+1}}>{{turnament.rounds|length}})
+    {
+       location.replace("{{ path('turnament_finish',{'idEvent': turnament.event.id, 'id': turnament.id } ) }}");
+    }
+
+  
+    $( ".sortable" ).sortable({
+      connectWith: ".connectedSortable",
+      start: function( event, li ) { 
+        $(li.item).removeClass("ui-state-default");
+      $(li.item).addClass("ui-state-highlight");
+    },
+    stop:function( event, li ) { 
+      $(li.item).removeClass("ui-state-highlight");
+      $(li.item).addClass("ui-state-default");
+    }
+    }).disableSelection();
+  } );
+function loadMatches(roundsArray){
+  let i =1;
+  value = roundsArray['tab'+{{(roundId+1)}}];
+
+      let rid = {{(roundId+1)}};
+       s = "Tour"+rid;
+    
+      
+     $('#output').append('<ul class="sortable2" id=o'+rid+'>'+s+'</ul>');
+    
+     i++;
+   
+     let groupIndex =1;
+
+    for (const [key2, value2] of Object.entries(value)) {
+
+       $('#o'+rid).append('<ul class="sortable2" id=o'+key2+'>'+"Poule "+ groupIndex +'</ul>');
+       groupIndex++;
+      let arrId = [];
+      let arrName = [];
+      let arrSet = [];
+
+
+       for (const [key3, value3] of Object.entries(value2)) {
+          let splittedTeam = value3.split(':');
+
+          let idTeam = splittedTeam[0];
+          let nameTeam = splittedTeam[1];
+
+          let setTeam = splittedTeam[2];
+
+
+          arrId.push(idTeam);
+          arrName.push(nameTeam);
+          arrSet.push(setTeam);
+
+
+      }
+
+      for(let i = 0 ; i<arrId.length ;  i++ )
+        for(let j = i+1 ; j<arrId.length ;  j++ )
+        {
+          let team = arrId[i]+arrId[j];      
+          $('#o'+key2).append('<ul class="labelMatch ui-state-default" id=o'+team+'>'+arrName[i]+' vs '+arrName[j]+'</ul>');
+
+            // k -> setIndex
+            for(let k = 0; k< arrSet[i];k++)
+            {
+              $('#o'+key2).append('<li class="ui-state-default">Set '+(k+1)+
+                '<input type="number" class="number" id=s:'+arrId[i]+':'+k+':'+(groupIndex-1)+' name="score" size="1" value='+(i+j)+'>'+
+                ' <input type="number" class="number" id=s:'+arrId[j]+':'+k+':'+(groupIndex-1)+' name="score" size="1" value='+(i+j)+'></li>');
+
+            }
+             
+            
+            
+        }
+      
+    //}
+  }
+  $('#output').append('<button class="btn btn-info " id="next-round">Tour suivant</button>');
+  
+  $("#next-round").click(function(){
+
+    currentRound++;
+    var text = $('.number');
+    let a = 1;
+    let scoreA = [],scoreB = [];
+    let idA = [], idB=[],idSet=[], idGroup=[];
+
+    //On récupére les ids et les scores des inputs
+    for (const [key, value] of Object.entries(text))
+    {
+      
+         let score = value.value;
+         let id = String(value.id).split(':')[1];
+         let set = String(value.id).split(':')[2];
+         let group = String(value.id).split(':')[3];
+         if(score !== undefined && id !== undefined)
+         {
+          if(a)
+           {
+            scoreA.push(score);
+            idA.push(id);
+            idSet.push(set);
+            idGroup.push(group);
+            a=0;
+           }
+           else
+           {
+            scoreB.push(score);
+            idB.push(id);
+            a=1;
+           }  
+           
+         }
+
+         
+       
+    }
+    //console.log(idSet);
+    let dataMatches ={};
+    dataMatches['scoreA']= scoreA;
+    dataMatches['scoreB']= scoreB;
+    dataMatches['idA']= idA;
+    dataMatches['idB']= idB;
+    dataMatches['idSet']= idSet;
+    dataMatches['idGroup']= idGroup;
+    dataMatches['groupStages'] = [];
+    dataMatches['round']=currentRound;
+    for( const [key, value] of Object.entries(roundsArray['tab1']))
+    {
+      dataMatches['groupStages'].push(value);
+    }
+    
+     var dataMatchesJson = JSON.stringify(dataMatches);
+     let result;
+     $.ajax({
+                url: "{{ path('turnament_run',{'idEvent': turnament.event.id, 'id': turnament.id, 'roundId' : roundId } ) }}",
+                type: "POST",
+                
+                data: {dataMatchesJson},               
+                 traditional: true,
+                 beforeSend: function (xhr){
+                xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                },
+                
+                success: function (data)
+                {
+                    console.log("ok");                    
+                    location.replace("{{ path('turnament_run',{'idEvent': turnament.event.id, 'id': turnament.id, 'roundId' : (roundId+1) } ) }}");
+                    
+                }
+                ,
+                error: function (data, error)
+                {
+                  console.log(error);
+                }
+            })
+    
+  });
+
+};
+
+  $("#load-matches").click(function(){
+    let rounds = {};
+    $("#output").empty();
+
+    $('.tab-pane').each(function(i)
+    {
+        let idR = $(this).attr('id');
+        //each round
+         let groupStages={}
+
+        $(this).children().each(function( index, value )
+        {
+            //each group stage
+            let id = $(this).attr('id');
+
+            $(this).children().each(function( index, value ){
+                 //each team
+
+                let teamId = $(value).attr('id');
+
+                if (!groupStages[id]) {
+                groupStages[id] = [];
+                }
+                 groupStages[id].push(teamId); 
+
+            });
+              
+            if (!rounds[idR]) {
+                rounds[idR] = [];
+            }
+             rounds[idR] = groupStages;    
+
+        });
+       
+
+        
+    });
+
+   roundsArray = rounds;
+    var roundsJson = JSON.stringify(rounds);
+    console.log(rounds);
+    loadMatches(rounds);
+    
+   
+  });
+  </script>
+    {% endblock %}

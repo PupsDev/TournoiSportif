@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Index Joueur{% endblock %}
+
+{% block body %}
+    <h1>Index Joueur</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Identifiant</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Équipe</th>
+                <th>Nom</th>
+                <th>Pseudo</th>
+                <th>Niveau</th>
+
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for player in players %}
+            <tr>
+
+                <td>{{ player.id }}</td>
+                <td>{{ player.email }}</td>
+                <td>{{ player.roles ? player.roles|json_encode : '' }}</td>
+                <td>{{ player.team }}</td>
+                <td>{{ player.firstname }}</td>
+                <td>{{ player.surname }}</td>
+                <td>{{ player.level }}</td>
+                 
+                <td>
+                   
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('player_new') }}">Nouveau</a>
+{% endblock %}

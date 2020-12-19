@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau tournoi{% endblock %}
+
+{% block body %}
+    <h1>Créer un nouveau tournoi</h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form.name) }}
+    
+    <button class="btn">{{ button_label|default('Save') }}</button>
+
+    <a href="{{ path('turnament_index', {'idEvent': event.id})}}">retour à la liste</a>
+{% endblock %}

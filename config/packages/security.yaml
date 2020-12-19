@@ -1,0 +1,44 @@
+security:
+    encoders:
+        App\Entity\User:
+            algorithm: auto
+
+    providers:
+        chain_provider:
+            chain:
+                providers: [app_player_provider, app_organizer_provider]
+        app_player_provider:
+            entity:
+                class: App\Entity\Player
+                property: email
+        app_organizer_provider:
+            entity:
+                class: App\Entity\Organizer
+                property: email
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            anonymous: lazy
+            provider: chain_provider
+            guard:
+                authenticators:
+                    - App\Security\AppCustomAuthenticator
+            logout:
+                path: app_logout
+                # where to redirect after logout
+                # target: app_any_route
+
+    access_control:
+       
+        - { path: ^/event/new, roles: ROLE_ORGANIZER } #ROLE_ORGANIZER
+        - { path: ^/event/.*, roles: ROLE_USER } #ROLE_ORGANIZER
+        - { path: ^/event, roles: IS_AUTHENTICATED_ANONYMOUSLY } #ROLE_ORGANIZER
+        - { path: ^/turnament, roles: IS_AUTHENTICATED_ANONYMOUSLY } #ROLE_PLAYER
+        - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }   #IS_AUTHENTICATED_REMEMBERED
+
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+#

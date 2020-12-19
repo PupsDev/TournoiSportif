@@ -1,0 +1,11 @@
+joueur : 
+elodie.laborde@wanadoo.fr
+password
+
+Joueur capitaine
+joueur.capitaine@wanadoo.fr
+password
+
+Organisateur
+mathieu.ladeuil@umontpellier.fr
+password

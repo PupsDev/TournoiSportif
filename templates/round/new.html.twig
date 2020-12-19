@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle poule{% endblock %}
+
+{% block body %}
+    <h1>Créer une nouvelle poule</h1>
+
+    {{ form_start(form) }}
+  
+    <div class = "form-group">
+        {{form_widget(form.loserBracket)}}
+    </div>
+    <div class = "form-group">
+        <label for = "">Meilleurs joueurs en sortie :</label>
+        {{form_widget(form.playerPerRoundStage)}}
+    </div>
+
+      <ul class="groupStages list-group" data-prototype="{{ form_widget(form.groupStages.vars.prototype)|e('html_attr') }}">
+         <li class ="list-group-item list-group-item-primary">Liste des poules :</li>
+        {% for groupStage in form.groupStages %}
+            <li class ="list-group-item">Poule {{loop.index}}</li>
+            <li class ="list-group-item">{{ form_widget(groupStage) }}</li>
+            <br>
+        {% endfor %}
+       
+    </ul>
+     
+   
+    <button type="button" class="add_item_link btn btn-primary" data-collection-holder-class="groupStages">Nouvelle poule</button>
+    <button class="btn btn-success">{{ button_label|default('Sauvegarder') }}</button>
+     {{ form_end(form) }}
+
+    <a href="{{ path('round_index', {'idEvent': turnament.event.id, 'idTurnament': turnament.id}) }}">Retour à la liste</a>
+
+    {% endblock %}

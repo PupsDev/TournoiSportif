@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil{% endblock %}
+
+{% block body %}
+   <div class="card-header" style="background-color:#303030;color:white;text-align:center;">
+<h1>
+    <div class="row">
+    <div class="col-6">
+     Profil
+    </div>
+
+    <div class="col" style="border-left:2px solid white; height:100%;">
+            <a href="{{ path('organizer_edit', {'id': organizer.id}) }}" class="btn btn-danger" >Modifier profil</a>
+    </div>
+    </h1>
+</div>
+
+    <ul class="list-group"> 
+        <li class="list-group-item"> <strong>Prénom</strong>   {{ organizer.firstname }}</li>
+        <li class="list-group-item"> <strong>Nom</strong>   {{ organizer.surname }}</li>
+        <li class="list-group-item"> <strong> Email</strong>   {{ organizer.email }}</li>
+        <li class="list-group-item"> <strong> Structure</strong>   {{ organizer.structure }}</li>
+        <li class="list-group-item list-group-item-primary"> <strong> Liste des événements</strong>   </li>
+         {% for event in organizer.events %}
+             <li class="list-group-item"> <strong>Tournoi</strong>   {{ event.name }}</li>
+        {% endfor %}
+        
+</ul>
+
+{% endblock %}

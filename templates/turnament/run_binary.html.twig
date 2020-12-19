@@ -1,0 +1,360 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Run Turnament{% endblock %}
+
+{% block body %}
+  <style>
+    .sortable{
+    width: 150px;
+    min-height: 20px;
+    list-style-type: none;
+    margin-right: 40px;
+    float:left;
+
+  }
+  .sortable li{
+    margin-left: -20px;
+    font-size: 1.2em;
+    width: 110px;
+  }
+  .ui-state-highlight {
+  border-color: LIME;
+
+}
+.sortable2{
+    width: 270px;
+    min-height: 20px;
+    list-style-type: none;
+  }
+  .number {
+  width: 3em;
+}
+  .labelMatch {
+  margin-top: 20px;
+}
+  .tournoi{
+    transform: scaleX(1.5);
+    transform: translateX(0.8);
+    width: 50%;
+    height: : 90%;
+    margin-left: 30%;
+
+
+  }
+
+  </style>
+
+      <div class="card tab-content" id="content">
+     <div class="card-header" style="background-color:#303030;color:white;text-align:center;">
+      <div class="row">
+        <div class="col-9">
+        <h1>Lancer le Tournoi</h1>
+      </div>
+      <div class="col">
+            <button class="btn btn-info " id="next-round">Tour suivant</button>
+ </div>
+</div>
+</div>
+
+<div >
+
+   {% for round in turnament.rounds %}
+       {% set myloop = loop.index %}
+
+        {% if round.groupStages[0].teams is not empty  %}
+           <div class="row">
+        {% for groupStage in round.groupStages %}
+            
+                {% if groupStage.teams is not empty %}
+                  <div class="col-2" >
+              <ul  class="list-group" id="sortable{{loop.index}}">
+
+                 <li  class ="list-group-item list-group-item-primary poule" id="psortable{{loop.index}}"> Poule {{loop.index}}</li>
+               {% for team in groupStage.teams %}
+
+                   <li class ="list-group-item  poule" id="{{ team.id }}:{{team.name}}:{{groupStage.setPerGroupStage}}"> {{ team.name }}</li>
+
+                  {% endfor %}  
+                  
+               {% endif %}
+               </ul>
+             </div>
+        {% endfor %}
+        </div>
+        {% endif %}
+
+    {% endfor %}
+    
+
+<button class="btn btn-info " id="load-matches">Charger les matchs</button>
+</div>
+</div>
+</div>
+  <div class="tournoi" id="bracket">
+         
+
+</div>
+
+<script type="text/javascript">
+ 
+
+
+  
+function createRectangle (x,y,size) {
+  var points = new Array();
+  let doubleS = 2*size;
+  let middleS = size/2;
+  points.push(x,y); 
+  points.push(x+doubleS,y); 
+  points.push(x+doubleS+middleS,y+middleS); 
+  points.push(x+doubleS,y+size); 
+  points.push(x,y+size); 
+  return points;
+}
+function createLinks (x,y,x1,y1,x2,y2,size) {
+
+  let doubleS = 2*size;
+  let middleS = size/2;
+  var points = new Array();
+  points.push(x1+doubleS+middleS,y1+size+middleS); 
+  points.push(x1+doubleS+2*middleS,y1+size+middleS); 
+
+  points.push(x1+doubleS+2*middleS,y1+3*size+middleS); 
+
+  points.push(x1+doubleS+middleS,y1+3*size+middleS);
+
+
+  return points;
+}
+
+function genereBrackets(nbTeam, size) {
+      let teams = [];
+
+    $('.list-group').each(function(i)
+    {
+        let idR = $(this).attr('id');
+
+        $(this).children().each(function( index, value )
+        {
+
+            if($(this).attr('id')!= 'p'+idR)
+            {
+              
+               $(this).each(function( index, value ){
+                   //each team
+                  let teamId = $(value).attr('id');
+                  
+                   teams.push(teamId.split(':')[1]); 
+
+              });
+              
+            }  
+
+        });
+       
+        
+    });
+  d3.select("#bracket").append("svg").attr("width", nbTeam*8*size ).attr("height", nbTeam*8*size );
+  let x=0;
+  let y=0;
+
+  let offsetY =2;
+
+  let arrowX = 5/2*size;
+  let arrowY = 1/2*size;
+
+  let arrayMatches = new Array();
+  let k =0;
+  let end = Math.log2(nbTeam);
+
+  while(nbTeam!=1/2)
+  {
+    y=offsetY/2*size;
+    let temp;
+    let off=1;
+
+    let innerMatches = new Array();
+    for(let i = 0 ; i< nbTeam;i++)
+    {
+      innerMatches.push(i);
+      let listeCoord = createRectangle (x,y,size);
+      
+      d3.select("svg").append("polygon").attr("style", "fill:#999999;stroke:white;" ).attr("points", listeCoord).attr("id","p"+k+""+i);;
+      let name;
+      if(k==0)
+        name = teams[i];
+      else
+        name = "NaN  ";
+      d3.select("svg").append("text")
+        .attr("x", x+size/2 - size/4 )
+        .attr("y", y+size/2+size/6)
+        .attr("font-family", "sans-serif")
+        .attr("font-size", size/2+"px")
+        .attr("fill", "white")
+        .text(name)
+        .attr("coordX", x)
+        .attr("coordY", y)
+        .attr("off", off)
+        .attr("offsetY", offsetY)
+        .attr("index", i)
+        .attr("k", k)
+        .attr("id",k+""+i);
+
+      if(i%2==0)
+      {
+        temp=[x,y];
+
+      }
+      if(i%2==1)
+      {
+        //under win
+        //drawLinksVictory(temp[0]+arrowX,x*off,y+arrowY,temp[1]+arrowY,size);
+
+        //upper win
+        //drawLinksVictory(temp[0]+arrowX,x*off,temp[1]+arrowY,y+arrowY,size);
+      
+        //d3.select("text").attr("under",true);
+        drawLinks(temp[0]+arrowX,x*off,temp[1]+arrowY,y+arrowY,size);
+      }
+      
+      y+=size*offsetY;
+      
+    }
+    off++;
+    offsetY*=2;
+    x+=8*size;
+  
+    nbTeam=nbTeam/2;
+    k++;
+    arrayMatches.push(innerMatches);
+
+
+  }
+  console.log(arrayMatches);
+  $("text").on({
+    
+    //let color =  d3.select("#p"+id).attr("style","fill:green");
+      mouseenter: function () {
+        let id = d3.select(this).attr("id");
+        let team = d3.select(this).text();
+        if(team!= "NaN  ")
+            d3.select("#p"+id).attr("style","fill:#454545");
+
+
+      },
+      mouseleave: function () {
+        let id = d3.select(this).attr("id");
+        
+          d3.select("#p"+id).attr("style","fill:#999999");
+      }
+  });
+  
+    $("text").on("click", function() {
+      let x = Number(d3.select(this).attr("coordX"));
+      let y = Number(d3.select(this).attr("coordY"));
+
+      let i =  Number(d3.select(this).attr("index"));
+      let k =  Number(d3.select(this).attr("k"));
+      let id = d3.select(this).attr("id");
+      let off = Number(d3.select(this).attr("off"));
+      let offsetY = Number(d3.select(this).attr("offsetY"));
+
+      let team = d3.select(this).text();
+      console.log(team);
+
+      //d3.select("#p"+id).attr("style","fill:green");
+
+      if(id!=end+""+0 && team!="NaN  ")
+      {
+  
+        if(i%2==0)
+        {
+          
+          drawLinksLoser(x+arrowX,x*off,y+offsetY*size+arrowY,y+arrowY,size);
+          drawLinksVictory(x+arrowX,x*off,y+arrowY,y+offsetY*size+arrowY,size);
+          d3.select('[id="'+(k+1)+Math.trunc(i/2)+'"]').text(team);
+
+
+        }
+        else
+        {
+          
+          drawLinksLoser(x+arrowX,x*off,y-offsetY*size+arrowY,y+arrowY,size);
+          drawLinksVictory(x+arrowX,x*off,y+arrowY,y-offsetY*size+arrowY,size);
+          d3.select('[id="'+(k+1)+Math.trunc(i/2)+'"]').text(team);
+
+        }
+      }
+        
+    });
+
+
+  
+  
+
+}
+function drawLinks(x1,x2,y1,y2,size,nbTeam)
+{
+  x2+=8*size;
+  let a = (x2-x1)/2;
+  let b = (y2-y1);
+
+  let points = new Array();
+  points.push(x1,y1);
+  points.push(x1+a,y1);
+
+  points.push(x1+a,y2);
+  points.push(x1,y2);
+
+  var coordLink2 = new Array();
+  coordLink2.push(x1+a,y1+b/2);
+  coordLink2.push(x2,y1+b/2);
+
+
+  d3.select("svg").append("path").attr("style", "fill:white;fill-opacity:0.1;stroke:black;stroke-dasharray: 5;" ).attr("d", "M"+points);
+  d3.select("svg").append("path").attr("style", "fill:white;fill-opacity:0.1;stroke:black;fill-opacity:0.1;stroke-dasharray: 5;" ).attr("d", "M"+coordLink2);
+
+}
+function drawLinksVictory(x1,x2,y1,y2,size,nbTeam)
+{
+  x2+=8*size;
+  let a = (x2-x1)/2;
+  let b = (y2-y1);
+
+  let points = new Array();
+  points.push(x1,y1);
+  points.push(x1+a,y1);
+  points.push(x1+a,y1+b/2);
+  points.push(x1+a,y1+b/2);
+  points.push(x2,y1+b/2);
+
+  d3.select("svg").append("path").attr("style", "fill:white;fill-opacity:0.1;stroke:green;" ).attr("d", "M"+points);
+
+}
+function drawLinksLoser(x1,x2,y1,y2,size,nbTeam)
+{
+  x2+=8*size;
+  let a = (x2-x1)/2;
+  let b = (y2-y1);
+
+  let points = new Array();
+  points.push(x1,y1);
+  points.push(x1+a,y1);
+  points.push(x1+a,y1+b/2);
+  points.push(x1+a,y1+b/2);
+
+  d3.select("svg").append("path").attr("style", "fill:white;fill-opacity:0.1;fill-opacity:0.1;stroke:red;" ).attr("d", "M"+points);
+
+}
+
+$("#load-matches").click(function(){
+  var size = 40;
+  var nbTeam = {{turnament.event.teamPerTurnament}};
+
+  genereBrackets(nbTeam, size);
+
+
+});
+</script>
+ 
+    {% endblock %}

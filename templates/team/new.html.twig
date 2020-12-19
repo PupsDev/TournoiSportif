@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle équipe{% endblock %}
+
+{% block body %}
+    <h1>Créer une nouvelle équipe</h1>
+
+       {{ form_start(form) }}
+  
+    <div class = "form-group">
+    	<label for = "">Nom de l'équipe :</label>
+        {{form_widget(form.name)}}
+    </div>
+  <div class = "form-group">
+    	<label for = "">Choisir le tournoi :</label>
+        {{form_widget(form.turnament)}}
+    </div>
+    <button class="btn btn-success">{{ button_label|default('Sauvegarder') }}</button>
+     {{ form_row(form._token) }}
+    {{ form_end(form, {'render_rest': false}) }}
+
+    <a href="{{ path('team_index') }}">Retour à la liste</a>
+{% endblock %}

@@ -1,0 +1,67 @@
+
+@font-face{
+	src: url(fonts/Open_Sans/OpenSans-Light.ttf);
+	font-family: OpenSans;
+	src:url(fonts/pervitina_dex/Pervitina-Dex-FFP.ttf);
+	font-family: Pervitina;
+}
+
+
+#esprit{
+	font-family: Pervitina;
+}
+
+#esprit-titre{
+	font-family: Pervitina;
+	font-size: large;
+	transform: scale(1.5);
+	text-align: center;
+	margin-top: 100px;
+}
+html, body {
+  height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
+
+	background-color: #f5ede2;
+	background-image: url(image/fond.jpg);
+	background-position:  center top;
+	background-repeat:    no-repeat;
+	font-family: 'OpenSans', sans-serif;
+
+}
+
+.navbar{
+	background-color: !important blue;
+}
+
+.card{
+	background-color: rgba(0, 0, 0, 0.1);
+	border-color: white;
+}
+
+.container{
+	margin-top: 15px;
+	flex: 1 0 auto;
+}
+
+
+title{
+	font-family: 'OpenSans', sans-serif;
+}
+
+footer{	
+	flex-shrink: 0;
+
+	bottom:0;
+	height: 170px;
+	width:100%;
+	padding-top: 20px;
+	background-color: #232323;
+	color: white;
+	 
+}
+
+

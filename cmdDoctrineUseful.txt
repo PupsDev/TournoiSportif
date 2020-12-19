@@ -1,0 +1,31 @@
+php bin/console doctrine:database:create
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
+
+php bin/console doctrine:fixtures:load    
+
+php bin/console make:entity
+php bin/console make:controller
+php bin/console make:crud 
+
+php bin/console make:crud Event
+
+FORCER :
+php bin/console doctrine:schema:update --force
+
+composer require --dev orm-fixtures
+
+-------------
+ yarn add bootstrap --dev
+
+#Asset folder
+composer require symfony/webpack-encore-bundle
+yarn install
+yarn add @symfony/webpack-encore --dev
+
+
+Link le projet avec github d'abord puis :
+
+git add -A
+git commit -m "persist matches dbb"
+git push origin master
